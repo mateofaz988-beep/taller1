@@ -8,7 +8,6 @@ export default function Registro() {
 
   const handleRegister = () => {
     console.log("Registrando Gamer:", username);
-    // Aquí conectarías con tu lógica de Supabase o Firebase
   };
 
   return (

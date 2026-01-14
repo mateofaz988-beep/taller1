@@ -10,7 +10,6 @@ export default function LoginScreen() {
         console.log("Usuario ingresado: " + usuario);
         console.log("Password ingresado: " + password);
 
-        // Validación básica manual
         if (usuario === "admin" && password === "123") {
             Alert.alert("Bienvenido", "Acceso correcto");
         } else {

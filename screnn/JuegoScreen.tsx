@@ -2,16 +2,14 @@ import { Button, StyleSheet, Text, TextInput, View, Alert, TouchableOpacity } fr
 import React, { useState } from 'react'
 
 export default function JuegoScreen() {
-    // --- ESTADOS LOGIN ---
+
     const [usuario, setUsuario] = useState("")
     const [password, setPassword] = useState("")
     const [logeado, setLogeado] = useState(false)
 
-    // --- ESTADOS JUEGO ---
     const [puntos, setPuntos] = useState(0)
     const [posicion, setPosicion] = useState({ top: 100, left: 100 })
 
-    // Función para mover el insecto a un lugar aleatorio
     function aplastar() {
         setPuntos(puntos + 1)
         const nuevaTop = Math.floor(Math.random() * 400) + 50
@@ -27,7 +25,6 @@ export default function JuegoScreen() {
         }
     }
 
-    // --- PANTALLA DEL JUEGO ---
     if (logeado) {
         return (
             <View style={styles.containerJuego}>
@@ -47,7 +44,6 @@ export default function JuegoScreen() {
         )
     }
 
-    // --- PANTALLA DE LOGIN ---
     return (
         <View style={styles.container}>
             <Text style={styles.titulo}>BUG SMASHER</Text>
@@ -78,7 +74,7 @@ const styles = StyleSheet.create({
     },
     containerJuego: {
         flex: 1,
-        backgroundColor: '#2e7d32', // Fondo verde como pasto
+        backgroundColor: '#2e7d32',
     },
     titulo: {
         fontSize: 40,
@@ -102,7 +98,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
     },
     insecto: {
-        position: 'absolute', // Esto permite que se mueva por toda la pantalla
+        position: 'absolute',
         width: 80,
         height: 80,
         justifyContent: 'center',
