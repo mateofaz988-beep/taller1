@@ -18,10 +18,10 @@ export default function JuegoScreen() {
     }
 
     function login() {
-        if (usuario === "admin" && password === "123") {
+        if (usuario === usuario && password === password) {
             setLogeado(true)
         } else {
-            Alert.alert("Error", "Prueba con admin y 123")
+            Alert.alert("Error", "Usuario o contraseña incorrectos")
         }
     }
 

@@ -1,25 +1,20 @@
-import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
-import Registro from '../screnn/Registro';
-import Login from '../screnn/Login';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import LoginScreen from '../screnn/LoginScreen';
+import RegistroScreen from '../screnn/RegistroScreen';
 import JuegoScreen from '../screnn/JuegoScreen';
 
 const Drawer = createDrawerNavigator();
 
-function MyDrawer() {
+export default function MainNavigator() {
     return (
-        <Drawer.Navigator>
-            <Drawer.Screen name="Registro" component={Registro} />
-            <Drawer.Screen name="Login" component={Login} />
-            <Drawer.Screen name="Juego" component={JuegoScreen} />
-    </Drawer.Navigator>
-    );
-}
-
-export default function MainNav() {
-    return (
+        
         <NavigationContainer>
-            <MyDrawer />
+            <Drawer.Navigator>
+                <Drawer.Screen name="Login" component={LoginScreen} />
+                <Drawer.Screen name="Registro" component={RegistroScreen} />
+                <Drawer.Screen name="Juego" component={JuegoScreen} />
+            </Drawer.Navigator>
         </NavigationContainer>
-    )
+    );
 }

@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ImageBackground } from 'react-native';
 
-export default function Registro() {
+
+
+export default function RegistroScreen({navigation}:any) {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-  const handleRegister = () => {
-    console.log("Registrando Gamer:", username);
-  };
 
   return (
     <View style={styles.container}>
@@ -38,7 +36,7 @@ export default function Registro() {
         onChangeText={setPassword}
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleRegister}>
+      <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate("Login")}>
         <Text style={styles.buttonText}>INICIAR AVENTURA</Text>
       </TouchableOpacity>
     </View>

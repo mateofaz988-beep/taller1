@@ -1,7 +1,8 @@
 import { Button, StyleSheet, Text, TextInput, View, Alert } from 'react-native'
 import React, { useState } from 'react'
+import JuegoScreen from './JuegoScreen';
 
-export default function LoginScreen() {
+export default function LoginScreen({navigation}: any) {
     const [usuario, setUsuario] = useState("")
     const [password, setPassword] = useState("")
 
@@ -10,7 +11,7 @@ export default function LoginScreen() {
         console.log("Usuario ingresado: " + usuario);
         console.log("Password ingresado: " + password);
 
-        if (usuario === "admin" && password === "123") {
+        if (usuario === usuario && password === password) {
             Alert.alert("Bienvenido", "Acceso correcto");
         } else {
             Alert.alert("Error", "Usuario o contraseña incorrectos");
@@ -42,7 +43,7 @@ export default function LoginScreen() {
             />
 
             <View style={styles.buttonContainer}>
-                <Button title='Iniciar Sesión' onPress={login} color="#4CAF50" />
+                <Button title='Iniciar Sesión' onPress={()=>navigation.navigate("Juego")} color="#4CAF50" />
                 <View style={{ marginVertical: 10 }} />
             </View>
         </View>
