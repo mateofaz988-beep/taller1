@@ -1,108 +1,62 @@
-<<<<<<< HEAD
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
-
-export default function Registro() {
-  return (
-    <View>
-      <Text>Registro</Text>
-    </View>
-  )
-}
-
-const styles = StyleSheet.create({})
-=======
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ImageBackground } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { auth, db } from '../config/firebaseConfig';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
 
-export default function Registro() {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+export default function Registro({ navigation }: any) {
+    const [nick, setNick] = useState('');
+    const [edad, setEdad] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
-  const handleRegister = () => {
-    console.log("Registrando Gamer:", username);
-  };
+    const registrarUsuario = async () => {
+        if (nick === '' || edad === '' || email === '' || password === '') {
+            Alert.alert("Error", "Todos los campos son obligatorios");
+            return;
+        }
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>NEW PLAYER</Text>
-      <Text style={styles.subtitle}>Crea tu cuenta de jugador</Text>
+        try {
+           
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const uid = userCredential.user.uid;
 
-      <TextInput
-        style={styles.input}
-        placeholder="Gamer Tag (Usuario)"
-        placeholderTextColor="#aaa"
-        onChangeText={setUsername}
-      />
+            
+            await setDoc(doc(db, "usuarios", uid), {
+                nick: nick,
+                edad: edad,
+                email: email,
+                puntos: 0 
+            });
 
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        placeholderTextColor="#aaa"
-        keyboardType="email-address"
-        onChangeText={setEmail}
-      />
+            Alert.alert("¡Éxito!", "Usuario registrado correctamente");
+            navigation.navigate('Login');
 
-      <TextInput
-        style={styles.input}
-        placeholder="Contraseña"
-        placeholderTextColor="#aaa"
-        secureTextEntry
-        onChangeText={setPassword}
-      />
+        } catch (error: any) {
+            Alert.alert("Error en registro", error.message);
+        }
+    };
 
-      <TouchableOpacity style={styles.button} onPress={handleRegister}>
-        <Text style={styles.buttonText}>INICIAR AVENTURA</Text>
-      </TouchableOpacity>
-    </View>
-  );
+    return (
+        <View style={styles.container}>
+            <Text style={styles.titulo}>Crear Cuenta</Text>
+            
+            <TextInput placeholder="Nick (Apodo)" style={styles.input} onChangeText={setNick} value={nick} />
+            <TextInput placeholder="Edad" style={styles.input} keyboardType="numeric" onChangeText={setEdad} value={edad} />
+            <TextInput placeholder="Correo Electrónico" style={styles.input} keyboardType="email-address" onChangeText={setEmail} value={email} autoCapitalize="none" />
+            <TextInput placeholder="Contraseña" style={styles.input} secureTextEntry onChangeText={setPassword} value={password} />
+
+            <Button title="Registrarse" onPress={registrarUsuario} color="#2196F3" />
+            
+            <View style={{ marginTop: 20 }}>
+                <Button title="Ya tengo cuenta (Login)" onPress={() => navigation.navigate('Login')} color="gray" />
+            </View>
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#0f0c29',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#00f2fe',
-    textTransform: 'uppercase',
-    marginBottom: 10,
-  },
-  subtitle: {
-    color: '#fff',
-    marginBottom: 30,
-  },
-  input: {
-    width: '100%',
-    height: 50,
-    backgroundColor: '#1b1b2f',
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    color: '#fff',
-    marginBottom: 15,
-    borderWidth: 1,
-    borderColor: '#444',
-  },
-  button: {
-    width: '100%',
-    height: 55,
-    backgroundColor: '#7f00ff',
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 20,
-    elevation: 5,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
+    container: { flex: 1, justifyContent: 'center', padding: 20, backgroundColor: '#f5f5f5' },
+    titulo: { fontSize: 30, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
+    input: { backgroundColor: 'white', padding: 15, borderRadius: 10, marginBottom: 15, fontSize: 16 }
 });
->>>>>>> christopher

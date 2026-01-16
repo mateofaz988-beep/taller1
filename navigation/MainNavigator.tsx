@@ -1,25 +1,23 @@
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import React from 'react';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
-import Registro from '../screnn/Registro';
+
+// Importaciones de tus pantallas
 import Login from '../screnn/Login';
+import Registro from '../screnn/Registro';
 import JuegoScreen from '../screnn/JuegoScreen';
 
-const Drawer = createDrawerNavigator();
+const Stack = createNativeStackNavigator();
 
-function MyDrawer() {
-    return (
-        <Drawer.Navigator>
-            <Drawer.Screen name="Registro" component={Registro} />
-            <Drawer.Screen name="Login" component={Login} />
-            <Drawer.Screen name="Juego" component={JuegoScreen} />
-    </Drawer.Navigator>
-    );
-}
-
-export default function MainNav() {
+export default function MainNavigator() {
     return (
         <NavigationContainer>
-            <MyDrawer />
+            {/* screenOptions={{ headerShown: false }} oculta la barra de arriba para que se vea pantalla completa */}
+            <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="Login" component={Login} />
+                <Stack.Screen name="Registro" component={Registro} />
+                <Stack.Screen name="Juego" component={JuegoScreen} />
+            </Stack.Navigator>
         </NavigationContainer>
-    )
+    );
 }

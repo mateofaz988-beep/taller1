@@ -1,108 +1,140 @@
-import { Button, StyleSheet, Text, TextInput, View, Alert, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Button } from 'react-native';
+import { auth, db } from '../config/firebaseConfig';
+import { doc, updateDoc, getDoc } from 'firebase/firestore';
 
-export default function JuegoScreen() {
+export default function JuegoScreen({ navigation }: any) {
+    
+    // Estados del juego
+    const [puntos, setPuntos] = useState(0);
+    const [tiempo, setTiempo] = useState(10); // 10 segundos de juego
+    const [juegoActivo, setJuegoActivo] = useState(true);
+    const [posicion, setPosicion] = useState({ top: 100, left: 100 });
 
-    const [usuario, setUsuario] = useState("")
-    const [password, setPassword] = useState("")
-    const [logeado, setLogeado] = useState(false)
+    // 1. TEMPORIZADOR (Requisito del PDF)
+    useEffect(() => {
+        if (tiempo > 0 && juegoActivo) {
+            const temporizador = setTimeout(() => {
+                setTiempo(tiempo - 1);
+            }, 1000);
+            return () => clearTimeout(temporizador);
+        } else if (tiempo === 0 && juegoActivo) {
+            terminarJuego();
+        }
+    }, [tiempo, juegoActivo]);
 
-    const [puntos, setPuntos] = useState(0)
-    const [posicion, setPosicion] = useState({ top: 100, left: 100 })
-
+    // Función para mover el bicho
     function aplastar() {
-        setPuntos(puntos + 1)
-        const nuevaTop = Math.floor(Math.random() * 400) + 50
-        const nuevaLeft = Math.floor(Math.random() * 250) + 20
-        setPosicion({ top: nuevaTop, left: nuevaLeft })
-    }
-
-    function login() {
-        if (usuario === usuario && password ===password ) {
-            setLogeado(true)
-        } else {
-            Alert.alert("Error", "usuario o contraseña incorrectos")
+        if (juegoActivo) {
+            setPuntos(puntos + 1);
+            // Mover insecto aleatoriamente
+            const nuevaTop = Math.floor(Math.random() * 500) + 50;
+            const nuevaLeft = Math.floor(Math.random() * 300) + 20;
+            setPosicion({ top: nuevaTop, left: nuevaLeft });
         }
     }
 
-    if (logeado) {
-        return (
-            <View style={styles.containerJuego}>
-                <Text style={styles.puntosText}>Bugs Aplastados: {puntos}</Text>
-                {/* El Insecto */}
+    // 2. GUARDAR EN FIREBASE (Requisito del PDF)
+    const terminarJuego = async () => {
+        setJuegoActivo(false);
+        try {
+            const uid = auth.currentUser?.uid;
+            if (uid) {
+                const userRef = doc(db, "usuarios", uid);
+                
+                // Opcional: Solo guardar si es el puntaje más alto (opcional)
+                // Por ahora guardamos el último puntaje jugado
+                await updateDoc(userRef, {
+                    puntos: puntos
+                });
+                
+                Alert.alert("¡Tiempo Fuera!", `Hiciste ${puntos} puntos. ¡Guardados en la nube!`);
+            }
+        } catch (error) {
+            console.log(error);
+            Alert.alert("Error", "No se pudo guardar el puntaje");
+        }
+    };
+
+    const reiniciar = () => {
+        setPuntos(0);
+        setTiempo(10);
+        setJuegoActivo(true);
+    };
+
+    const cerrarSesion = () => {
+        auth.signOut();
+        navigation.replace('Login');
+    };
+
+    return (
+        <View style={styles.containerJuego}>
+            <Text style={styles.titulo}>BUG SMASHER</Text>
+            
+            <View style={styles.marcador}>
+                <Text style={styles.textoInfo}>⏳ Tiempo: {tiempo}s</Text>
+                <Text style={styles.textoInfo}>🎯 Puntos: {puntos}</Text>
+            </View>
+
+            {juegoActivo ? (
                 <TouchableOpacity
                     onPress={aplastar}
                     style={[styles.insecto, { top: posicion.top, left: posicion.left }]}
                 >
                     <Text style={{ fontSize: 50 }}>🪳</Text>
                 </TouchableOpacity>
-
-                <View style={styles.botonSalir}>
-                    <Button title="Cerrar Juego" onPress={() => setLogeado(false)} color="red" />
+            ) : (
+                <View style={styles.gameOver}>
+                    <Text style={styles.finTexto}>GAME OVER</Text>
+                    <Button title="Jugar de nuevo" onPress={reiniciar} color="#4CAF50" />
                 </View>
-            </View>
-        )
-    }
+            )}
 
-    return (
-        <View style={styles.container}>
-            <Text style={styles.titulo}>BUG SMASHER</Text>
-            <TextInput
-                placeholder='Usuario'
-                style={styles.input}
-                onChangeText={(t) => setUsuario(t)}
-                value={usuario}
-            />
-            <TextInput
-                placeholder='Contraseña'
-                style={styles.input}
-                onChangeText={(t) => setPassword(t)}
-                value={password}
-                secureTextEntry
-            />
-            <Button title='Entrar a Jugar' onPress={login} color="#4CAF50" />
+            <View style={styles.botonSalir}>
+                <Button title="Cerrar Sesión" onPress={cerrarSesion} color="red" />
+            </View>
         </View>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#1a1a1a',
-        justifyContent: 'center',
-        padding: 20,
-    },
     containerJuego: {
         flex: 1,
-        backgroundColor: '#2e7d32',
+        backgroundColor: '#2e7d32', // Verde oscuro (pasto)
+        paddingTop: 50
     },
     titulo: {
-        fontSize: 40,
+        fontSize: 30,
         fontWeight: 'bold',
         color: '#fff',
         textAlign: 'center',
-        marginBottom: 30,
+        marginBottom: 20
     },
-    puntosText: {
-        fontSize: 24,
+    marcador: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        padding: 10
+    },
+    textoInfo: {
         color: 'white',
-        textAlign: 'center',
-        marginTop: 50,
-        fontWeight: 'bold',
-    },
-    input: {
-        fontSize: 18,
-        backgroundColor: "#fff",
-        marginBottom: 15,
-        padding: 10,
-        borderRadius: 10,
+        fontSize: 20,
+        fontWeight: 'bold'
     },
     insecto: {
         position: 'absolute',
-        width: 80,
-        height: 80,
+        padding: 10,
+    },
+    gameOver: {
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        gap: 20
+    },
+    finTexto: {
+        fontSize: 40,
+        color: 'white',
+        fontWeight: 'bold'
     },
     botonSalir: {
         position: 'absolute',
@@ -110,4 +142,4 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         width: '80%',
     }
-})
+});

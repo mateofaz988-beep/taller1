@@ -1,34 +1,22 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import React from 'react';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
-import { Entypo } from '@expo/vector-icons';
-import LoginScreen from '../screnn/Login';
 
+// Importaciones
+import Login from '../screnn/Login'; // Asegurate que coincida con tus archivos
+import Registro from '../screnn/Registro';
+import JuegoScreen from '../screnn/JuegoScreen';
 
+const Drawer = createDrawerNavigator();
 
-const Tab = createBottomTabNavigator();
-
-function MyTabs() {
-  return (
-    <Tab.Navigator>
-      <Tab.Screen 
-        name="Guardar" 
-        component={LoginScreen} 
-        options={{
-          tabBarIcon: ({ color }) => (
-            <Entypo name="save" size={30} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen name="Leer" component={LoginScreen} />
-      
-    </Tab.Navigator>
-  );
-}
-
-export default function MainNav() {
-  return (
-    <NavigationContainer>
-      <MyTabs />
-    </NavigationContainer>
-  );
+export default function MainNavigator() {
+    return (
+        <NavigationContainer>
+            <Drawer.Navigator initialRouteName="Login">
+                <Drawer.Screen name="Login" component={Login} />
+                <Drawer.Screen name="Registro" component={Registro} />
+                <Drawer.Screen name="Juego" component={JuegoScreen} />
+            </Drawer.Navigator>
+        </NavigationContainer>
+    );
 }
